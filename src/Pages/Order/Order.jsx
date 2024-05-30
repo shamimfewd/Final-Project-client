@@ -12,9 +12,10 @@ const Order = () => {
   const categories = ["salad", "pizza", "soup", "dessert", "drinks"];
   const { category } = useParams();
   const initialIndex = categories.indexOf(category);
-
   const [tabIndex, setTabIndex] = useState(initialIndex);
+
   const [menu] = useMenu();
+  
 
   const dessert = menu.filter((item) => item.category === "dessert");
   const soup = menu.filter((item) => item.category === "soup");
@@ -34,11 +35,7 @@ const Order = () => {
           <Tab>Drinks</Tab>
         </TabList>
         <TabPanel>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3">
-            {salad.map((item) => (
-              <FoodCard key={item._id} item={item} />
-            ))}
-          </div>
+         <OrderTab items={salad}/>
         </TabPanel>
         <TabPanel>
           <OrderTab items={pizza} />

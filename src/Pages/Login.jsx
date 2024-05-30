@@ -7,6 +7,7 @@ import {
 import { AuthContext } from "../Providers/AuthProvider";
 import Swal from "sweetalert2";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import SocialLogin from "../Components/SocialLogin";
 
 const Login = () => {
   const [disabled, setDisabled] = useState(true);
@@ -15,6 +16,7 @@ const Login = () => {
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/";
+ 
 
   useEffect(() => {
     loadCaptchaEnginge(6);
@@ -22,13 +24,16 @@ const Login = () => {
 
   const handleCapTcha = (e) => {
     const user_capTcha_value = e.target.value;
-    console.log(user_capTcha_value);
+    
     if (validateCaptcha(user_capTcha_value)) {
       setDisabled(false);
     } else {
       setDisabled(true);
     }
   };
+
+
+  
   const handleLogin = (e) => {
     e.preventDefault();
     const form = e.target;
@@ -124,7 +129,8 @@ const Login = () => {
                 />
               </div>
             </form>
-            <Link to={'/signup'}>go to sign up</Link>
+            <SocialLogin />
+            <Link to={"/signup"}>go to sign up</Link>
           </div>
         </div>
       </div>

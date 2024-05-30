@@ -3,10 +3,13 @@ import { useForm } from "react-hook-form";
 import { AuthContext } from "../Providers/AuthProvider";
 import Swal from "sweetalert2";
 import { Link, useNavigate } from "react-router-dom";
+import useAxiosPublic from "../Hooks/useAxiosPublic";
+import SocialLogin from "../Components/SocialLogin";
 
 const SingUp = () => {
   const { createUser, updateUserProfile } = useContext(AuthContext);
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
   const {
     register,
     handleSubmit,
@@ -15,33 +18,40 @@ const SingUp = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
     createUser(data.email, data.password)
       .then((result) => {
         console.log(result.user);
         // update user profile
         updateUserProfile(data.name, data.photo)
           .then(() => {
-            console.log("user profile info updated");
-            reset();
-            Swal.fire({
-              title: "User Created Successfully",
-              showClass: {
-                popup: `
-                  animate__animated
-                  animate__fadeInUp
-                  animate__faster
-                `,
-              },
-              hideClass: {
-                popup: `
-                  animate__animated
-                  animate__fadeOutDown
-                  animate__faster
-                `,
-              },
+            // create user entry in the database
+            const userInfo = {
+              name: data.name,
+              email: data.email,
+            };
+            axiosPublic.post("/users", userInfo).then((res) => {
+              if (res.data.insertedId) {
+                reset();
+                Swal.fire({
+                  title: "User Created Successfully",
+                  showClass: {
+                    popup: `
+                      animate__animated
+                      animate__fadeInUp
+                      animate__faster
+                    `,
+                  },
+                  hideClass: {
+                    popup: `
+                      animate__animated
+                      animate__fadeOutDown
+                      animate__faster
+                    `,
+                  },
+                });
+                navigate("/");
+              }
             });
-            navigate("/");
           })
           .catch((error) => {
             console.log(error);
@@ -159,6 +169,7 @@ const SingUp = () => {
               />
             </div>
           </form>
+          <SocialLogin />
           <Link to={"/login"}>go to login</Link>
         </div>
       </div>
