@@ -1,21 +1,23 @@
+import { useLoaderData } from "react-router-dom";
 import SectionTitle from "../../Components/SectionTitle";
-import { useForm } from "react-hook-form";
-import useAxiosPublic from "../../Hooks/useAxiosPublic";
-import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
 
-const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
+const UpdateItem = () => {
+  const data = useLoaderData();
+  const { name, category, recipe, price, _id } = data
 
-const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
+  console.log(name, category, recipe);
 
-const AddItems = () => {
-  const axiosPublic = useAxiosPublic();
   const axiosSecure = useAxiosSecure();
+  const axiosPublic = useAxiosPublic();
   const { register, handleSubmit, reset } = useForm();
+  const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
+  const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
   const onSubmit = async (data) => {
-  
-
     // image upload to imgbb and then get an url
     const imageFile = { image: data.image[0] };
     const res = await axiosPublic.post(image_hosting_api, imageFile, {
@@ -35,14 +37,14 @@ const AddItems = () => {
         image: res.data.data.display_url,
       };
 
-      const menuRes = await axiosSecure.post("/menu", menuItem);
-      console.log(menuRes.data);
-      if (menuRes.data.insertedId) {
+      const menuRes = await axiosSecure.patch(`/menu/${_id}`, menuItem);
+
+      if (menuRes.data.modifiedCount > 0) {
         // show success popup
         Swal.fire({
           position: "top-end",
           icon: "success",
-          title: `${data.name} is added to the menu`,
+          title: `${data.name} is updated to the menu`,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -50,14 +52,10 @@ const AddItems = () => {
     }
     console.log("with image", res.data);
   };
-
   return (
     <div>
-      <SectionTitle heading={"add an item"} subHeading={"what's new"} />
-      <data
-        value="
-    "
-      >
+      <SectionTitle heading={"Update an Item"} subHeading={"Refresh Info"} />
+      <div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
             <label className="form-control w-full MY-6">
@@ -67,6 +65,7 @@ const AddItems = () => {
               <input
                 type="text"
                 placeholder="Recipe name"
+                defaultValue={name}
                 {...register("name", { required: true })}
                 className="input input-bordered w-full "
               />
@@ -77,7 +76,7 @@ const AddItems = () => {
             <div className="w-full">
               <label htmlFor="">Category</label>
               <select
-                defaultValue={"default"}
+                defaultValue={category}
                 {...register("category", { required: true })}
                 className="select select-bordered  w-full "
               >
@@ -98,6 +97,7 @@ const AddItems = () => {
                 </div>
                 <input
                   type="number"
+                  defaultValue={price}
                   {...register("price", { required: true })}
                   placeholder="price"
                   className="input input-bordered w-full "
@@ -112,6 +112,7 @@ const AddItems = () => {
                 <span className="label-text">Your bio</span>
               </div>
               <textarea
+                defaultValue={recipe}
                 {...register("recipe", { required: true })}
                 className="textarea textarea-bordered h-24"
                 placeholder="description"
@@ -125,11 +126,11 @@ const AddItems = () => {
               className="file-input w-full max-w-xs my-6"
             />
           </div>
-          <button className="btn">Add Item</button>
+          <button className="btn">Update menu Item</button>
         </form>
-      </data>
+      </div>
     </div>
   );
 };
 
-export default AddItems;
+export default UpdateItem;

@@ -15,11 +15,6 @@ const AllUsers = () => {
 
 
 
-  // , {
-  //   headers: {
-  //     Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-  //   },
-  // }
 
 
 
